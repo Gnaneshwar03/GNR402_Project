@@ -1,0 +1,35 @@
+Spatial indexing is a technique used to speed up spatial queries on large datasets by creating an index structure that allows for efficient spatial searches.
+In PostGIS, the most commonly used spatial index is the R-Tree index, which is created using the CREATE INDEX command with the USING GIST option.
+
+-- Create a table of points
+CREATE TABLE my_points (
+  id SERIAL PRIMARY KEY,
+  geom GEOMETRY(Point, 4326)
+);
+
+-- Add some data
+INSERT INTO my_points (geom)
+VALUES
+  ('SRID=4326;POINT(0 0)'),
+  ('SRID=4326;POINT(1 1)'),
+  ('SRID=4326;POINT(2 2)'),
+  ('SRID=4326;POINT(3 3)'),
+  ('SRID=4326;POINT(4 4)'),
+  ('SRID=4326;POINT(5 5)'),
+  ('SRID=4326;POINT(6 6)'),
+  ('SRID=4326;POINT(7 7)'),
+  ('SRID=4326;POINT(8 8)'),
+  ('SRID=4326;POINT(9 9)');
+
+-- Create a spatial index on the points
+CREATE INDEX my_points_geom_idx
+ON my_points
+USING GIST (geom);
+
+Once the index has been created, it can be used to speed up spatial queries on the table. For example, a query that finds all points within a certain distance of a given point:
+
+SELECT *
+FROM my_points
+WHERE ST_DWithin(geom, 'SRID=4326;POINT(5 5)', 2);
+
+With the spatial index in place, this query can be executed much more quickly than if no index were used.

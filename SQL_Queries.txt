@@ -1,0 +1,44 @@
+1. ST_DWithin(). 
+All water lines within a distance of 10 units (Angular units, degrees of lat and long) from a specific road.
+
+SELECT *
+FROM ind_water_lines_dcw
+WHERE ST_DWithin(ind_water_lines_dcw.geom, 
+                 (SELECT geom
+                  FROM ind_roads 
+                  WHERE gid = 1), 
+                 10);
+
+2. ST_Crosses(). 
+All ind_water_areas_dcw that cross a specific ind_water_lines_dcw
+Khari River. Gid=3439.
+
+SELECT *
+FROM ind_water_areas_dcw
+WHERE ST_Crosses(ind_water_areas_dcw.geom, 
+                 (SELECT geom 
+                  FROM ind_water_lines_dcw 
+                  WHERE gid = 3439));
+
+3. ST_Intersects(). 
+All ind_water_areas_dcw that intersect with a specific ind_roads.
+road Gid=7793, areas gid=3137,3093
+
+SELECT *
+FROM ind_water_areas_dcw
+WHERE ST_Intersects(ind_water_areas_dcw.geom, 
+                    (SELECT geom 
+                     FROM ind_roads 
+                     WHERE gid = 7793));
+
+4. To extract the data for all ind_water_areas_dcw that touch any ind_roads:
+
+SELECT ind_water_areas_dcw.*
+FROM ind_water_areas_dcw, ind_roads
+WHERE ST_Touches(ind_water_areas_dcw.geom, ind_roads.geom);
+
+In this dataset, there are no touches between any objects.
+
+
+
+
